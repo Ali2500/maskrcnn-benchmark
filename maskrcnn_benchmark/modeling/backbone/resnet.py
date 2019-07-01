@@ -67,10 +67,20 @@ ResNet50FPNStagesTo5 = tuple(
     StageSpec(index=i, block_count=c, return_features=r)
     for (i, c, r) in ((1, 3, True), (2, 4, True), (3, 6, True), (4, 3, True))
 )
+# ResNet-50-FPN (up to stage 4)
+ResNet50FPNStagesTo4 = tuple(
+    StageSpec(index=i, block_count=c, return_features=r)
+    for (i, c, r) in ((1, 3, True), (2, 4, True), (3, 6, True))
+)
 # ResNet-101-FPN (including all stages)
 ResNet101FPNStagesTo5 = tuple(
     StageSpec(index=i, block_count=c, return_features=r)
     for (i, c, r) in ((1, 3, True), (2, 4, True), (3, 23, True), (4, 3, True))
+)
+# ResNet-101-FPN (up to stage 4)
+ResNet101FPNStagesTo4 = tuple(
+    StageSpec(index=i, block_count=c, return_features=r)
+    for (i, c, r) in ((1, 3, True), (2, 4, True), (3, 23, True))
 )
 # ResNet-152-FPN (including all stages)
 ResNet152FPNStagesTo5 = tuple(
@@ -288,11 +298,11 @@ class Bottleneck(nn.Module):
             deformable_groups = dcn_config.get("deformable_groups", 1)
             with_modulated_dcn = dcn_config.get("with_modulated_dcn", False)
             self.conv2 = DFConv2d(
-                bottleneck_channels,
-                bottleneck_channels,
-                with_modulated_dcn=with_modulated_dcn,
-                kernel_size=3,
-                stride=stride_3x3,
+                bottleneck_channels, 
+                bottleneck_channels, 
+                with_modulated_dcn=with_modulated_dcn, 
+                kernel_size=3, 
+                stride=stride_3x3, 
                 groups=num_groups,
                 dilation=dilation,
                 deformable_groups=deformable_groups,
@@ -332,8 +342,8 @@ class Bottleneck(nn.Module):
         out = self.bn2(out)
         out = F.relu_(out)
 
-        out = self.conv3(out)
-        out = self.bn3(out)
+        out0 = self.conv3(out)
+        out = self.bn3(out0)
 
         if self.downsample is not None:
             identity = self.downsample(x)
@@ -351,7 +361,7 @@ class BaseStem(nn.Module):
         out_channels = cfg.MODEL.RESNETS.STEM_OUT_CHANNELS
 
         self.conv1 = Conv2d(
-            3, out_channels, kernel_size=7, stride=2, padding=3, bias=False
+            cfg.MODEL.RESNETS.NUM_INPUT_CHANNELS, out_channels, kernel_size=7, stride=2, padding=3, bias=False
         )
         self.bn1 = norm_func(out_channels)
 
@@ -443,9 +453,11 @@ _STAGE_SPECS = Registry({
     "R-50-C5": ResNet50StagesTo5,
     "R-101-C4": ResNet101StagesTo4,
     "R-101-C5": ResNet101StagesTo5,
-    "R-50-FPN": ResNet50FPNStagesTo5,
+    "R-50-FPN-C4": ResNet50FPNStagesTo4,
+    "R-50-FPN-C5": ResNet50FPNStagesTo5,
     "R-50-FPN-RETINANET": ResNet50FPNStagesTo5,
-    "R-101-FPN": ResNet101FPNStagesTo5,
+    "R-101-FPN-C4": ResNet101FPNStagesTo4,
+    "R-101-FPN-C5": ResNet101FPNStagesTo5,
     "R-101-FPN-RETINANET": ResNet101FPNStagesTo5,
     "R-152-FPN": ResNet152FPNStagesTo5,
 })

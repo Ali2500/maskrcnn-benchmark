@@ -60,7 +60,6 @@ _C.INPUT.CONTRAST = 0.0
 _C.INPUT.SATURATION = 0.0
 _C.INPUT.HUE = 0.0
 
-_C.INPUT.VERTICAL_FLIP_PROB_TRAIN = 0.0
 
 # -----------------------------------------------------------------------------
 # Dataset
@@ -259,6 +258,10 @@ _C.MODEL.ROI_KEYPOINT_HEAD.SHARE_BOX_FEATURE_EXTRACTOR = True
 # These options apply to both
 # ---------------------------------------------------------------------------- #
 _C.MODEL.RESNETS = CN()
+
+# Number of channels of the input image tensor
+_C.MODEL.RESNETS.NUM_INPUT_CHANNELS = 3
+_C.MODEL.RESNETS.NUM_NON_IMAGE_CHANNELS_PER_IMAGE = 0
 
 # Number of groups to use; 1 ==> ResNet; > 1 ==> ResNeXt
 _C.MODEL.RESNETS.NUM_GROUPS = 1
